@@ -1,0 +1,87 @@
+{
+  "name": "PRJ-0001 - W1 - Duplicate Detection & Recording",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "Dedup key = applicant_email, an ENGINEERING ASSUMPTION per Blueprint SS9 (corrected Sprint D00) - not an external blocker. Grounded in the form's required, unique email field."
+      },
+      "name": "Blueprint Traceability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {"values": [{"name": "applicant_email"}, {"name": "score"}, {"name": "recommendation"}]}
+      },
+      "name": "Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "sheetName": "Applicant Records",
+        "lookupColumn": "applicant_email",
+        "lookupValue": "={{$json.applicant_email}}"
+      },
+      "name": "Lookup Existing Records by Email",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {"leftValue": "={{$json.matchCount}}", "operator": {"operation": "gt"}, "rightValue": 0}
+          ]
+        }
+      },
+      "name": "Duplicate Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetName": "Applicant Records",
+        "columns": {"mappingMode": "defineBelow", "value": {"duplicate_flag": true, "review_status": "pending"}}
+      },
+      "name": "Write Record (duplicate_flag=true)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [660, -80]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetName": "Applicant Records",
+        "columns": {"mappingMode": "defineBelow", "value": {"duplicate_flag": false, "review_status": "pending"}}
+      },
+      "name": "Write Record (duplicate_flag=false)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [660, 80]
+    }
+  ],
+  "connections": {
+    "Sub-workflow Trigger": {"main": [[{"node": "Lookup Existing Records by Email", "type": "main", "index": 0}]]},
+    "Lookup Existing Records by Email": {"main": [[{"node": "Duplicate Found?", "type": "main", "index": 0}]]},
+    "Duplicate Found?": {
+      "main": [
+        [{"node": "Write Record (duplicate_flag=true)", "type": "main", "index": 0}],
+        [{"node": "Write Record (duplicate_flag=false)", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 6,
+    "asdp_state": "READY (definition-level)"
+  }
+}

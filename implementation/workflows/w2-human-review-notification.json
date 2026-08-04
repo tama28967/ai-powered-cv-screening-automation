@@ -1,0 +1,73 @@
+{
+  "name": "PRJ-0001 - W2 - Human Review Gate & Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "Independently-triggered workflow (Blueprint SS3 architecture decision): decouples 'record written' from 'candidate notified'. Fires only when review_status transitions to 'reviewed' - never directly from W1."
+      },
+      "name": "Blueprint Traceability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200]
+    },
+    {
+      "parameters": {
+        "pollTimes": {"item": [{"mode": "everyMinute"}]},
+        "sheetName": "Applicant Records",
+        "triggerOn": "rowUpdate",
+        "columnToWatch": "review_status"
+      },
+      "name": "Review Status Changed to Reviewed",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {"leftValue": "={{$json.review_status}}", "operator": {"operation": "equals"}, "rightValue": "reviewed"}
+          ]
+        }
+      },
+      "name": "Is Reviewed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.applicant_email}}",
+        "subject": "Application Update",
+        "message": "Candidate notification content - final copy is a Client Deliverable (D05), not authored here."
+      },
+      "name": "Send Candidate Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "sheetName": "Applicant Records",
+        "columns": {"mappingMode": "defineBelow", "value": {"notification_sent": true}}
+      },
+      "name": "Set notification_sent = true",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Review Status Changed to Reviewed": {"main": [[{"node": "Is Reviewed?", "type": "main", "index": 0}]]},
+    "Is Reviewed?": {"main": [[{"node": "Send Candidate Notification", "type": "main", "index": 0}]]},
+    "Send Candidate Notification": {"main": [[{"node": "Set notification_sent = true", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 7,
+    "asdp_state": "READY (definition-level)"
+  }
+}

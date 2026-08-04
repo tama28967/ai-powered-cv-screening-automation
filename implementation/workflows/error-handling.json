@@ -1,0 +1,68 @@
+{
+  "name": "PRJ-0001 - Error Handling (shared)",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "Shared sub-workflow, wired to every W1 stage. Covers exactly the named failure modes from Blueprint SS7: unreadable PDF, duplicate application, extraction failure, plus LLM call/parse failure."
+      },
+      "name": "Blueprint Traceability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {"values": [{"name": "record_id"}, {"name": "failure_mode"}]}
+      },
+      "name": "Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "unreadable_pdf"}]}},
+            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "duplicate_application"}]}},
+            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "extraction_failure"}]}},
+            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "llm_parse_failure"}]}}
+          ]
+        }
+      },
+      "name": "Route by Failure Mode",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "sheetName": "Applicant Records",
+        "columns": {"mappingMode": "defineBelow", "value": {"error_detail": "={{$json.failure_mode}}"}}
+      },
+      "name": "Record error_detail",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [440, 0]
+    }
+  ],
+  "connections": {
+    "Sub-workflow Trigger": {"main": [[{"node": "Route by Failure Mode", "type": "main", "index": 0}]]},
+    "Route by Failure Mode": {
+      "main": [
+        [{"node": "Record error_detail", "type": "main", "index": 0}],
+        [{"node": "Record error_detail", "type": "main", "index": 0}],
+        [{"node": "Record error_detail", "type": "main", "index": 0}],
+        [{"node": "Record error_detail", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 8,
+    "asdp_state": "READY (definition-level)"
+  }
+}

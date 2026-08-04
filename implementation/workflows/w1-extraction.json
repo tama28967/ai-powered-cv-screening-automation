@@ -1,0 +1,72 @@
+{
+  "name": "PRJ-0001 - W1 - Resume Extraction",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "Traces to Blueprint SS4/SS6-4 and SS9 assumption: predominantly text-based PDFs (Briefcase SS8). OCR out of scope pending Open Technical Question 2 (resume format mix) - named, not decided here."
+      },
+      "name": "Blueprint Traceability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {"values": [{"name": "resume_drive_ref"}]}
+      },
+      "name": "Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract text content from the PDF at $json.resume_drive_ref.\n// Text-extraction library is a build-time choice within CEF's Capability Profile deferral; not asserted here.\nreturn items;"
+      },
+      "name": "Extract Text Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {"leftValue": "={{$json.extraction_status}}", "operator": {"operation": "equals"}, "rightValue": "success"}
+          ]
+        }
+      },
+      "name": "Extraction Succeeded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "workflowId": "error-handling",
+        "parameters": {"failure_mode": "extraction_failure"}
+      },
+      "name": "Route to Error Handling",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [660, 80]
+    }
+  ],
+  "connections": {
+    "Sub-workflow Trigger": {"main": [[{"node": "Extract Text Content", "type": "main", "index": 0}]]},
+    "Extract Text Content": {"main": [[{"node": "Extraction Succeeded?", "type": "main", "index": 0}]]},
+    "Extraction Succeeded?": {
+      "main": [
+        [],
+        [{"node": "Route to Error Handling", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 4,
+    "asdp_state": "READY (definition-level, built to text-PDF assumption)"
+  }
+}

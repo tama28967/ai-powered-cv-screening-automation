@@ -1,0 +1,107 @@
+{
+  "name": "PRJ-0001 - W1 - AI Evaluation & Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "CONDITIONAL work item (Blueprint SS9, Open Technical Question 1). Structure only: Criteria Config is read at runtime, never hardcoded. criteria-config-schema.md currently has ZERO populated criterion rows - this is a labelled placeholder state, not a fabricated value. LLM provider is an explicit CEF assumption (Blueprint SS9), not asserted as fact."
+      },
+      "name": "Blueprint Traceability - CONDITIONAL",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -240]
+    },
+    {
+      "parameters": {
+        "workflowInputs": {"values": [{"name": "extracted_content"}, {"name": "record_id"}]}
+      },
+      "name": "Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "sheetName": "Criteria Config",
+        "options": {}
+      },
+      "name": "Read Criteria Config",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the evaluation prompt from active criterion_name/weight/description rows.\n// PLACEHOLDER: Criteria Config currently has zero active rows (Open Technical Question 1, unresolved).\n// This node must not proceed to a live LLM call with an empty criteria set in production -\n// that gate is a D02 build-time note, enforced operationally once criteria exist.\nreturn items;"
+      },
+      "name": "Construct Prompt (from Criteria Config)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LLM_PROVIDER_ENDPOINT}}",
+        "authentication": "genericCredentialType",
+        "options": {"response": {"response": {"responseFormat": "json"}}}
+      },
+      "name": "LLM Evaluation Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [660, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the LLM response into { score: number, recommendation: string } - structured output contract, never free text (Blueprint SS4).\nreturn items;"
+      },
+      "name": "Parse Structured Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {"leftValue": "={{$json.score}}", "operator": {"operation": "exists"}}
+          ]
+        }
+      },
+      "name": "Response Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1100, 0]
+    },
+    {
+      "parameters": {
+        "workflowId": "error-handling",
+        "parameters": {"failure_mode": "llm_parse_failure"}
+      },
+      "name": "Route to Error Handling",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [1320, 80]
+    }
+  ],
+  "connections": {
+    "Sub-workflow Trigger": {"main": [[{"node": "Read Criteria Config", "type": "main", "index": 0}]]},
+    "Read Criteria Config": {"main": [[{"node": "Construct Prompt (from Criteria Config)", "type": "main", "index": 0}]]},
+    "Construct Prompt (from Criteria Config)": {"main": [[{"node": "LLM Evaluation Call", "type": "main", "index": 0}]]},
+    "LLM Evaluation Call": {"main": [[{"node": "Parse Structured Response", "type": "main", "index": 0}]]},
+    "Parse Structured Response": {"main": [[{"node": "Response Valid?", "type": "main", "index": 0}]]},
+    "Response Valid?": {
+      "main": [
+        [],
+        [{"node": "Route to Error Handling", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 5,
+    "asdp_state": "CONDITIONAL - structure ready, criteria content blocked on Open Technical Question 1"
+  }
+}

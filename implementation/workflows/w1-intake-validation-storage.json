@@ -1,0 +1,80 @@
+{
+  "name": "PRJ-0001 - W1 - Intake, Validation & Storage",
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "Traces to Engineering Blueprint SS4/SS6-3. Form mechanism: n8n-native form (Blueprint SS5, Medium-confidence build-time assumption). Not deployed - definition artifact only, produced under Sprint D02."
+      },
+      "name": "Blueprint Traceability",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200]
+    },
+    {
+      "parameters": {
+        "formTitle": "Application Intake",
+        "formFields": {
+          "values": [
+            {"fieldLabel": "Applicant Name", "requiredField": true},
+            {"fieldLabel": "Applicant Email", "requiredField": true},
+            {"fieldLabel": "Resume (PDF)", "fieldType": "file", "requiredField": true}
+          ]
+        }
+      },
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {"leftValue": "={{$json.file.mimeType}}", "operator": {"operation": "equals"}, "rightValue": "application/pdf"}
+          ]
+        }
+      },
+      "name": "Validate File Type & Size",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "name": "={{$json.applicant_name}}_{{$now}}.pdf",
+        "options": {}
+      },
+      "name": "Upload to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [440, -80]
+    },
+    {
+      "parameters": {
+        "workflowId": "error-handling",
+        "parameters": {"failure_mode": "unreadable_pdf"}
+      },
+      "name": "Route to Error Handling",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [440, 80]
+    }
+  ],
+  "connections": {
+    "Form Trigger": {"main": [[{"node": "Validate File Type & Size", "type": "main", "index": 0}]]},
+    "Validate File Type & Size": {
+      "main": [
+        [{"node": "Upload to Google Drive", "type": "main", "index": 0}],
+        [{"node": "Route to Error Handling", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "meta": {
+    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
+    "asdp_work_item": 3,
+    "asdp_state": "READY (definition-level)"
+  }
+}
