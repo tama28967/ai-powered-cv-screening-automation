@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "notice": "Traces to Blueprint SS4/SS6-4 and SS9 assumption: predominantly text-based PDFs (Briefcase SS8). OCR out of scope pending Open Technical Question 2 (resume format mix) - named, not decided here."
+        "notice": "Traces to Blueprint SS4/SS6-4 and SS9 assumption: predominantly text-based PDFs (Briefcase SS8). OCR out of scope pending Open Technical Question 2 (resume format mix) - named, not decided here.\n\nD03 REMEDIATION (2026-08-03, D03-DEF-005): record_id now threaded in from intake and passed to Error Handling."
       },
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
@@ -12,7 +12,7 @@
     },
     {
       "parameters": {
-        "workflowInputs": {"values": [{"name": "resume_drive_ref"}]}
+        "workflowInputs": {"values": [{"name": "resume_drive_ref"}, {"name": "record_id"}]}
       },
       "name": "Sub-workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
@@ -44,7 +44,7 @@
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"failure_mode": "extraction_failure"}
+        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "extraction_failure"}
       },
       "name": "Route to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",

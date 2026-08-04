@@ -53,7 +53,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse the LLM response into { score: number, recommendation: string } - structured output contract, never free text (Blueprint SS4).\nreturn items;"
+        "jsCode": "// Parse the LLM response into { score: number, recommendation: string } - structured output contract, never free text (Blueprint SS4).\n// D03 REMEDIATION (2026-08-03, D03-DEF-003): also carry forward evaluation_criteria_version from 'Read Criteria Config' (config_version field) into this item's output -\n// sheets-record-schema.md requires it, and it was previously dropped between this node and the sub-workflow's return.\nreturn items;"
       },
       "name": "Parse Structured Response",
       "type": "n8n-nodes-base.code",
@@ -76,7 +76,7 @@
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"failure_mode": "llm_parse_failure"}
+        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "llm_parse_failure"}
       },
       "name": "Route to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",

@@ -3,12 +3,12 @@
   "nodes": [
     {
       "parameters": {
-        "notice": "Traces to Engineering Blueprint SS4/SS6-3. Form mechanism: n8n-native form (Blueprint SS5, Medium-confidence build-time assumption). Not deployed - definition artifact only, produced under Sprint D02."
+        "notice": "Traces to Engineering Blueprint SS4/SS6-3. Form mechanism: n8n-native form (Blueprint SS5, Medium-confidence build-time assumption). Not deployed - definition artifact only, produced under Sprint D02.\n\nD03 REMEDIATION (2026-08-03, D03-DEF-005): record_id is now generated here, at intake, and threaded through every downstream sub-workflow call - previously undefined until the final recording step, which left early failures with nothing to route error_detail against."
       },
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -200]
+      "position": [0, -240]
     },
     {
       "parameters": {
@@ -28,6 +28,15 @@
     },
     {
       "parameters": {
+        "jsCode": "// Generate record_id here, at intake - threaded through every downstream sub-workflow call (D03-DEF-005).\nitems[0].json.record_id = 'REC-' + Date.now();\nreturn items;"
+      },
+      "name": "Generate record_id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
         "conditions": {
           "conditions": [
             {"leftValue": "={{$json.file.mimeType}}", "operator": {"operation": "equals"}, "rightValue": "application/pdf"}
@@ -37,7 +46,7 @@
       "name": "Validate File Type & Size",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [220, 0]
+      "position": [440, 0]
     },
     {
       "parameters": {
@@ -48,21 +57,22 @@
       "name": "Upload to Google Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [440, -80]
+      "position": [660, -80]
     },
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"failure_mode": "unreadable_pdf"}
+        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "unreadable_pdf"}
       },
       "name": "Route to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1,
-      "position": [440, 80]
+      "position": [660, 80]
     }
   ],
   "connections": {
-    "Form Trigger": {"main": [[{"node": "Validate File Type & Size", "type": "main", "index": 0}]]},
+    "Form Trigger": {"main": [[{"node": "Generate record_id", "type": "main", "index": 0}]]},
+    "Generate record_id": {"main": [[{"node": "Validate File Type & Size", "type": "main", "index": 0}]]},
     "Validate File Type & Size": {
       "main": [
         [{"node": "Upload to Google Drive", "type": "main", "index": 0}],
@@ -75,6 +85,7 @@
   "meta": {
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 3,
-    "asdp_state": "READY (definition-level)"
+    "asdp_state": "READY (definition-level)",
+    "asdp_d03_remediation": "2026-08-03: added record_id generation at intake (D03-DEF-005)"
   }
 }

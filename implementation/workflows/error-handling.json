@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "notice": "Shared sub-workflow, wired to every W1 stage. Covers exactly the named failure modes from Blueprint SS7: unreadable PDF, duplicate application, extraction failure, plus LLM call/parse failure."
+        "notice": "Shared sub-workflow, wired to every W1 stage. Covers exactly the named failure modes from Blueprint SS7: unreadable PDF, duplicate application, extraction failure, plus LLM call/parse failure.\n\nD03 REMEDIATION (2026-08-03, D03-DEF-004): early-pipeline failures (unreadable_pdf, extraction_failure, llm_parse_failure) occur BEFORE Duplicate Detection & Recording ever writes the Sheets row - a plain 'update' would find nothing to update. Changed to 'appendOrUpdate' keyed on record_id, which creates the row for an early failure and updates it for a late one (duplicate_application, which fires after the row exists)."
       },
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
@@ -37,9 +37,10 @@
     },
     {
       "parameters": {
-        "operation": "update",
+        "operation": "appendOrUpdate",
         "sheetName": "Applicant Records",
-        "columns": {"mappingMode": "defineBelow", "value": {"error_detail": "={{$json.failure_mode}}"}}
+        "matchingColumns": ["record_id"],
+        "columns": {"mappingMode": "defineBelow", "value": {"record_id": "={{$json.record_id}}", "error_detail": "={{$json.failure_mode}}"}}
       },
       "name": "Record error_detail",
       "type": "n8n-nodes-base.googleSheets",
@@ -63,6 +64,7 @@
   "meta": {
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 8,
-    "asdp_state": "READY (definition-level)"
+    "asdp_state": "READY (definition-level)",
+    "asdp_d03_remediation": "2026-08-03: changed 'update' to 'appendOrUpdate' keyed on record_id (D03-DEF-004) - early-pipeline failures occur before Duplicate Detection & Recording writes the row"
   }
 }

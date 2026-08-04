@@ -4,7 +4,7 @@ Traces to Engineering Blueprint §4 ("writes one structured record...") and §6 
 
 | Column | Type | Notes |
 |---|---|---|
-| `record_id` | string | Generated at recording time. |
+| `record_id` | string | **Generated at intake** (D03 correction, D03-DEF-005 — was "at recording time," which left early-pipeline failures with no id to route error_detail against) and threaded through every downstream sub-workflow call. |
 | `applicant_name` | string | From form intake. |
 | `applicant_email` | string | Required, unique per applicant — the duplicate-detection key (Blueprint §9, engineering assumption). |
 | `application_date` | datetime | Set at intake. |
