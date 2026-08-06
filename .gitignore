@@ -1,0 +1,31 @@
+# PRJ-0001 — repository ignore rules
+#
+# Private / PII test data must NEVER be committed to this repository or pushed
+# to any remote. Governed by repository ADR-0016 and
+# frameworks/delivery-framework/.claude/knowledge/test-data-governance.md
+#
+# Real CV/resume content, names, email addresses, phone numbers, addresses,
+# employment history, personal documents, and client-provided private data are
+# local-only. Evidence references a test-case or synthetic identifier — never
+# private content.
+#
+# Verify this protection with `git check-ignore -v <path>` — never assume it.
+
+# Local-only test fixtures (designated location for any private test input)
+test-fixtures/
+local-test-data/
+
+# Document formats commonly carrying personal data, anywhere in the repository
+*.pdf
+*.doc
+*.docx
+*.rtf
+*.odt
+
+# Common local environment / secret files (defence in depth — ASDP never
+# persists credential values, per credential-environment-governance.md)
+.env
+.env.*
+*.key
+*.pem
+credentials.json
