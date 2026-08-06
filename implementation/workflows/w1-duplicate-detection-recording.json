@@ -134,7 +134,12 @@
     },
     {
       "parameters": {
-        "workflowId": "error-handling",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:error-handling>",
+          "cachedResultName": "PRJ-0001 - Error Handling (shared)"
+        },
         "parameters": {
           "record_id": "={{$json.record_id}}",
           "failure_mode": "duplicate_application"
@@ -241,6 +246,7 @@
     "asdp_work_item": 6,
     "asdp_state": "READY (definition-level)",
     "asdp_d03_remediation": "2026-08-03: fixed incomplete field mapping (D03-DEF-001) and missing Error Handling routing for duplicate_application (D03-DEF-002)",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
   }
 }

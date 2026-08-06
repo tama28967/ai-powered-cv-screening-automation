@@ -134,7 +134,12 @@
     },
     {
       "parameters": {
-        "workflowId": "error-handling",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:error-handling>",
+          "cachedResultName": "PRJ-0001 - Error Handling (shared)"
+        },
         "parameters": {
           "record_id": "={{$json.record_id}}",
           "failure_mode": "llm_parse_failure"
@@ -148,6 +153,29 @@
         80
       ],
       "id": "w1-ai-evaluation-route-to-error-handling"
+    },
+    {
+      "id": "aieval-call-dedup",
+      "name": "Call W1 Duplicate Detection",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        -100
+      ],
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:w1-duplicate-detection-recording>",
+          "cachedResultName": "PRJ-0001 - W1 - Duplicate Detection & Recording"
+        },
+        "workflowInputs": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      },
+      "notes": "D08-DEF-004 remediation: wires the Blueprint SS4/SS6 W1 chain. workflowId is a DEPLOYMENT BINDING (<BIND:...> token), resolved at deploy time - never an environment ID in source."
     }
   ],
   "connections": {
@@ -208,7 +236,13 @@
     },
     "Response Valid?": {
       "main": [
-        [],
+        [
+          {
+            "node": "Call W1 Duplicate Detection",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Route to Error Handling",
@@ -225,6 +259,8 @@
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 5,
     "asdp_state": "CONDITIONAL - structure ready, criteria content blocked on Open Technical Question 1",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
+    "asdp_d08_def004": "2026-08-06 D08-DEF-004: wired AI evaluation -> duplicate detection per Blueprint SS4/SS6.",
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
   }
 }

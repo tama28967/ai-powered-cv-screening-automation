@@ -97,7 +97,12 @@
     },
     {
       "parameters": {
-        "workflowId": "error-handling",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:error-handling>",
+          "cachedResultName": "PRJ-0001 - Error Handling (shared)"
+        },
         "parameters": {
           "record_id": "={{$json.record_id}}",
           "failure_mode": "unreadable_pdf"
@@ -111,6 +116,29 @@
         80
       ],
       "id": "w1-intake-validation-storage-route-to-error-handling"
+    },
+    {
+      "id": "intake-call-extraction",
+      "name": "Call W1 Extraction",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        900,
+        -100
+      ],
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:w1-extraction>",
+          "cachedResultName": "PRJ-0001 - W1 - Resume Extraction"
+        },
+        "workflowInputs": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      },
+      "notes": "D08-DEF-004 remediation: wires the Blueprint SS4/SS6 W1 chain. workflowId is a DEPLOYMENT BINDING (<BIND:...> token), resolved at deploy time - never an environment ID in source."
     }
   ],
   "connections": {
@@ -153,6 +181,17 @@
           }
         ]
       ]
+    },
+    "Upload to Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Call W1 Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -161,6 +200,8 @@
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 3,
     "asdp_state": "READY (definition-level)",
-    "asdp_d03_remediation": "2026-08-03: added record_id generation at intake (D03-DEF-005)"
+    "asdp_d03_remediation": "2026-08-03: added record_id generation at intake (D03-DEF-005)",
+    "asdp_d08_def004": "2026-08-06 D08-DEF-004: wired intake -> extraction per Blueprint SS4/SS6.",
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
   }
 }

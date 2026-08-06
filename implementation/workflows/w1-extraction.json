@@ -74,7 +74,12 @@
     },
     {
       "parameters": {
-        "workflowId": "error-handling",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:error-handling>",
+          "cachedResultName": "PRJ-0001 - Error Handling (shared)"
+        },
         "parameters": {
           "record_id": "={{$json.record_id}}",
           "failure_mode": "extraction_failure"
@@ -88,6 +93,29 @@
         80
       ],
       "id": "w1-extraction-route-to-error-handling"
+    },
+    {
+      "id": "extract-call-aieval",
+      "name": "Call W1 AI Evaluation",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        900,
+        -100
+      ],
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<BIND:w1-ai-evaluation>",
+          "cachedResultName": "PRJ-0001 - W1 - AI Evaluation & Scoring"
+        },
+        "workflowInputs": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      },
+      "notes": "D08-DEF-004 remediation: wires the Blueprint SS4/SS6 W1 chain. workflowId is a DEPLOYMENT BINDING (<BIND:...> token), resolved at deploy time - never an environment ID in source."
     }
   ],
   "connections": {
@@ -115,7 +143,13 @@
     },
     "Extraction Succeeded?": {
       "main": [
-        [],
+        [
+          {
+            "node": "Call W1 AI Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Route to Error Handling",
@@ -131,6 +165,8 @@
   "meta": {
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 4,
-    "asdp_state": "READY (definition-level, built to text-PDF assumption)"
+    "asdp_state": "READY (definition-level, built to text-PDF assumption)",
+    "asdp_d08_def004": "2026-08-06 D08-DEF-004: wired extraction -> AI evaluation per Blueprint SS4/SS6.",
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
   }
 }
