@@ -48,9 +48,19 @@
     {
       "parameters": {
         "operation": "lookup",
-        "sheetName": "Applicant Records",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "lookupColumn": "applicant_email",
-        "lookupValue": "={{$json.applicant_email}}"
+        "lookupValue": "={{$json.applicant_email}}",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Lookup Existing Records by Email",
       "type": "n8n-nodes-base.googleSheets",
@@ -59,7 +69,8 @@
         220,
         0
       ],
-      "id": "w1-duplicate-detection-recording-lookup-existing-records-by-emai"
+      "id": "w1-duplicate-detection-recording-lookup-existing-records-by-emai",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     },
     {
       "parameters": {
@@ -87,7 +98,11 @@
     {
       "parameters": {
         "operation": "append",
-        "sheetName": "Applicant Records",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
@@ -99,7 +114,13 @@
             "duplicate_flag": true,
             "review_status": "pending"
           }
-        }
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Write Record (duplicate_flag=true)",
       "type": "n8n-nodes-base.googleSheets",
@@ -108,7 +129,8 @@
         660,
         -160
       ],
-      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-tru"
+      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-tru",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     },
     {
       "parameters": {
@@ -130,7 +152,11 @@
     {
       "parameters": {
         "operation": "append",
-        "sheetName": "Applicant Records",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
@@ -142,7 +168,13 @@
             "duplicate_flag": false,
             "review_status": "pending"
           }
-        }
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Write Record (duplicate_flag=false)",
       "type": "n8n-nodes-base.googleSheets",
@@ -151,7 +183,8 @@
         660,
         160
       ],
-      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-fal"
+      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-fal",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     }
   ],
   "connections": {
@@ -207,6 +240,7 @@
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 6,
     "asdp_state": "READY (definition-level)",
-    "asdp_d03_remediation": "2026-08-03: fixed incomplete field mapping (D03-DEF-001) and missing Error Handling routing for duplicate_application (D03-DEF-002)"
+    "asdp_d03_remediation": "2026-08-03: fixed incomplete field mapping (D03-DEF-001) and missing Error Handling routing for duplicate_application (D03-DEF-002)",
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
   }
 }

@@ -39,8 +39,18 @@
     {
       "parameters": {
         "operation": "read",
-        "sheetName": "Criteria Config",
-        "options": {}
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Criteria Config"
+        },
+        "options": {},
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Read Criteria Config",
       "type": "n8n-nodes-base.googleSheets",
@@ -49,7 +59,8 @@
         220,
         0
       ],
-      "id": "w1-ai-evaluation-read-criteria-config"
+      "id": "w1-ai-evaluation-read-criteria-config",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     },
     {
       "parameters": {
@@ -213,6 +224,7 @@
   "meta": {
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 5,
-    "asdp_state": "CONDITIONAL - structure ready, criteria content blocked on Open Technical Question 1"
+    "asdp_state": "CONDITIONAL - structure ready, criteria content blocked on Open Technical Question 1",
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
   }
 }

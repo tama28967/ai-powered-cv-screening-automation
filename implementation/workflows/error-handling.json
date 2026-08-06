@@ -95,17 +95,27 @@
     {
       "parameters": {
         "operation": "appendOrUpdate",
-        "sheetName": "Applicant Records",
-        "matchingColumns": [
-          "record_id"
-        ],
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "record_id": "={{$json.record_id}}",
             "error_detail": "={{$json.failure_mode}}"
-          }
-        }
+          },
+          "matchingColumns": [
+            "record_id"
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Record error_detail",
       "type": "n8n-nodes-base.googleSheets",
@@ -114,7 +124,8 @@
         440,
         0
       ],
-      "id": "error-handling-record-error-detail"
+      "id": "error-handling-record-error-detail",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     }
   ],
   "connections": {
@@ -168,6 +179,7 @@
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 8,
     "asdp_state": "READY (definition-level)",
-    "asdp_d03_remediation": "2026-08-03: changed 'update' to 'appendOrUpdate' keyed on record_id (D03-DEF-004) - early-pipeline failures occur before Duplicate Detection & Recording writes the row"
+    "asdp_d03_remediation": "2026-08-03: changed 'update' to 'appendOrUpdate' keyed on record_id (D03-DEF-004) - early-pipeline failures occur before Duplicate Detection & Recording writes the row",
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
   }
 }

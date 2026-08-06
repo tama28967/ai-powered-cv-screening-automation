@@ -23,9 +23,18 @@
             }
           ]
         },
-        "sheetName": "Applicant Records",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "triggerOn": "rowUpdate",
-        "columnToWatch": "review_status"
+        "columnToWatch": "review_status",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        }
       },
       "name": "Review Status Changed to Reviewed",
       "type": "n8n-nodes-base.googleSheetsTrigger",
@@ -34,7 +43,8 @@
         0,
         0
       ],
-      "id": "w2-human-review-notification-review-status-changed-to-reviewed"
+      "id": "w2-human-review-notification-review-status-changed-to-reviewed",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     },
     {
       "parameters": {
@@ -77,13 +87,23 @@
     {
       "parameters": {
         "operation": "update",
-        "sheetName": "Applicant Records",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Applicant Records"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "notification_sent": true
           }
-        }
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
+        },
+        "resource": "sheet"
       },
       "name": "Set notification_sent = true",
       "type": "n8n-nodes-base.googleSheets",
@@ -92,7 +112,8 @@
         660,
         0
       ],
-      "id": "w2-human-review-notification-set-notification-sent-true"
+      "id": "w2-human-review-notification-set-notification-sent-true",
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
     }
   ],
   "connections": {
@@ -135,6 +156,7 @@
   "meta": {
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 7,
-    "asdp_state": "READY (definition-level)"
+    "asdp_state": "READY (definition-level)",
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
   }
 }
