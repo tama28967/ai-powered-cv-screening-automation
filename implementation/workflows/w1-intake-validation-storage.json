@@ -8,23 +8,41 @@
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -240]
+      "position": [
+        0,
+        -240
+      ],
+      "id": "w1-intake-validation-storage-blueprint-traceability"
     },
     {
       "parameters": {
         "formTitle": "Application Intake",
         "formFields": {
           "values": [
-            {"fieldLabel": "Applicant Name", "requiredField": true},
-            {"fieldLabel": "Applicant Email", "requiredField": true},
-            {"fieldLabel": "Resume (PDF)", "fieldType": "file", "requiredField": true}
+            {
+              "fieldLabel": "Applicant Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Applicant Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume (PDF)",
+              "fieldType": "file",
+              "requiredField": true
+            }
           ]
         }
       },
       "name": "Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ],
+      "id": "w1-intake-validation-storage-form-trigger"
     },
     {
       "parameters": {
@@ -33,20 +51,34 @@
       "name": "Generate record_id",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ],
+      "id": "w1-intake-validation-storage-generate-record-id"
     },
     {
       "parameters": {
         "conditions": {
           "conditions": [
-            {"leftValue": "={{$json.file.mimeType}}", "operator": {"operation": "equals"}, "rightValue": "application/pdf"}
+            {
+              "leftValue": "={{$json.file.mimeType}}",
+              "operator": {
+                "operation": "equals"
+              },
+              "rightValue": "application/pdf"
+            }
           ]
         }
       },
       "name": "Validate File Type & Size",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ],
+      "id": "w1-intake-validation-storage-validate-file-type-size"
     },
     {
       "parameters": {
@@ -57,26 +89,69 @@
       "name": "Upload to Google Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [660, -80]
+      "position": [
+        660,
+        -80
+      ],
+      "id": "w1-intake-validation-storage-upload-to-google-drive"
     },
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "unreadable_pdf"}
+        "parameters": {
+          "record_id": "={{$json.record_id}}",
+          "failure_mode": "unreadable_pdf"
+        }
       },
       "name": "Route to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1,
-      "position": [660, 80]
+      "position": [
+        660,
+        80
+      ],
+      "id": "w1-intake-validation-storage-route-to-error-handling"
     }
   ],
   "connections": {
-    "Form Trigger": {"main": [[{"node": "Generate record_id", "type": "main", "index": 0}]]},
-    "Generate record_id": {"main": [[{"node": "Validate File Type & Size", "type": "main", "index": 0}]]},
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate record_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate record_id": {
+      "main": [
+        [
+          {
+            "node": "Validate File Type & Size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Validate File Type & Size": {
       "main": [
-        [{"node": "Upload to Google Drive", "type": "main", "index": 0}],
-        [{"node": "Route to Error Handling", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to Error Handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },

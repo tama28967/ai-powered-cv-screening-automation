@@ -8,22 +8,42 @@
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -240]
+      "position": [
+        0,
+        -240
+      ],
+      "id": "w1-duplicate-detection-recording-blueprint-traceability"
     },
     {
       "parameters": {
-        "workflowInputs": {"values": [
-          {"name": "record_id"},
-          {"name": "applicant_email"},
-          {"name": "score"},
-          {"name": "recommendation"},
-          {"name": "evaluation_criteria_version"}
-        ]}
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "record_id"
+            },
+            {
+              "name": "applicant_email"
+            },
+            {
+              "name": "score"
+            },
+            {
+              "name": "recommendation"
+            },
+            {
+              "name": "evaluation_criteria_version"
+            }
+          ]
+        }
       },
       "name": "Sub-workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ],
+      "id": "w1-duplicate-detection-recording-sub-workflow-trigger"
     },
     {
       "parameters": {
@@ -35,77 +55,149 @@
       "name": "Lookup Existing Records by Email",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ],
+      "id": "w1-duplicate-detection-recording-lookup-existing-records-by-emai"
     },
     {
       "parameters": {
         "conditions": {
           "conditions": [
-            {"leftValue": "={{$json.matchCount}}", "operator": {"operation": "gt"}, "rightValue": 0}
+            {
+              "leftValue": "={{$json.matchCount}}",
+              "operator": {
+                "operation": "gt"
+              },
+              "rightValue": 0
+            }
           ]
         }
       },
       "name": "Duplicate Found?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ],
+      "id": "w1-duplicate-detection-recording-duplicate-found"
     },
     {
       "parameters": {
         "operation": "append",
         "sheetName": "Applicant Records",
-        "columns": {"mappingMode": "defineBelow", "value": {
-          "record_id": "={{$json.record_id}}",
-          "applicant_email": "={{$json.applicant_email}}",
-          "score": "={{$json.score}}",
-          "recommendation": "={{$json.recommendation}}",
-          "evaluation_criteria_version": "={{$json.evaluation_criteria_version}}",
-          "duplicate_flag": true,
-          "review_status": "pending"
-        }}
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "record_id": "={{$json.record_id}}",
+            "applicant_email": "={{$json.applicant_email}}",
+            "score": "={{$json.score}}",
+            "recommendation": "={{$json.recommendation}}",
+            "evaluation_criteria_version": "={{$json.evaluation_criteria_version}}",
+            "duplicate_flag": true,
+            "review_status": "pending"
+          }
+        }
       },
       "name": "Write Record (duplicate_flag=true)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [660, -160]
+      "position": [
+        660,
+        -160
+      ],
+      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-tru"
     },
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "duplicate_application"}
+        "parameters": {
+          "record_id": "={{$json.record_id}}",
+          "failure_mode": "duplicate_application"
+        }
       },
       "name": "Log Duplicate to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1,
-      "position": [660, 0]
+      "position": [
+        660,
+        0
+      ],
+      "id": "w1-duplicate-detection-recording-log-duplicate-to-error-handling"
     },
     {
       "parameters": {
         "operation": "append",
         "sheetName": "Applicant Records",
-        "columns": {"mappingMode": "defineBelow", "value": {
-          "record_id": "={{$json.record_id}}",
-          "applicant_email": "={{$json.applicant_email}}",
-          "score": "={{$json.score}}",
-          "recommendation": "={{$json.recommendation}}",
-          "evaluation_criteria_version": "={{$json.evaluation_criteria_version}}",
-          "duplicate_flag": false,
-          "review_status": "pending"
-        }}
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "record_id": "={{$json.record_id}}",
+            "applicant_email": "={{$json.applicant_email}}",
+            "score": "={{$json.score}}",
+            "recommendation": "={{$json.recommendation}}",
+            "evaluation_criteria_version": "={{$json.evaluation_criteria_version}}",
+            "duplicate_flag": false,
+            "review_status": "pending"
+          }
+        }
       },
       "name": "Write Record (duplicate_flag=false)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [660, 160]
+      "position": [
+        660,
+        160
+      ],
+      "id": "w1-duplicate-detection-recording-write-record-duplicate-flag-fal"
     }
   ],
   "connections": {
-    "Sub-workflow Trigger": {"main": [[{"node": "Lookup Existing Records by Email", "type": "main", "index": 0}]]},
-    "Lookup Existing Records by Email": {"main": [[{"node": "Duplicate Found?", "type": "main", "index": 0}]]},
+    "Sub-workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Lookup Existing Records by Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Existing Records by Email": {
+      "main": [
+        [
+          {
+            "node": "Duplicate Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Duplicate Found?": {
       "main": [
-        [{"node": "Write Record (duplicate_flag=true)", "type": "main", "index": 0}, {"node": "Log Duplicate to Error Handling", "type": "main", "index": 0}],
-        [{"node": "Write Record (duplicate_flag=false)", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Write Record (duplicate_flag=true)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Duplicate to Error Handling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Write Record (duplicate_flag=false)",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },

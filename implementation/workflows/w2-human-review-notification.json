@@ -8,11 +8,21 @@
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -200]
+      "position": [
+        0,
+        -200
+      ],
+      "id": "w2-human-review-notification-blueprint-traceability"
     },
     {
       "parameters": {
-        "pollTimes": {"item": [{"mode": "everyMinute"}]},
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
         "sheetName": "Applicant Records",
         "triggerOn": "rowUpdate",
         "columnToWatch": "review_status"
@@ -20,20 +30,34 @@
       "name": "Review Status Changed to Reviewed",
       "type": "n8n-nodes-base.googleSheetsTrigger",
       "typeVersion": 1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ],
+      "id": "w2-human-review-notification-review-status-changed-to-reviewed"
     },
     {
       "parameters": {
         "conditions": {
           "conditions": [
-            {"leftValue": "={{$json.review_status}}", "operator": {"operation": "equals"}, "rightValue": "reviewed"}
+            {
+              "leftValue": "={{$json.review_status}}",
+              "operator": {
+                "operation": "equals"
+              },
+              "rightValue": "reviewed"
+            }
           ]
         }
       },
       "name": "Is Reviewed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ],
+      "id": "w2-human-review-notification-is-reviewed"
     },
     {
       "parameters": {
@@ -44,24 +68,67 @@
       "name": "Send Candidate Notification",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ],
+      "id": "w2-human-review-notification-send-candidate-notification"
     },
     {
       "parameters": {
         "operation": "update",
         "sheetName": "Applicant Records",
-        "columns": {"mappingMode": "defineBelow", "value": {"notification_sent": true}}
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "notification_sent": true
+          }
+        }
       },
       "name": "Set notification_sent = true",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [660, 0]
+      "position": [
+        660,
+        0
+      ],
+      "id": "w2-human-review-notification-set-notification-sent-true"
     }
   ],
   "connections": {
-    "Review Status Changed to Reviewed": {"main": [[{"node": "Is Reviewed?", "type": "main", "index": 0}]]},
-    "Is Reviewed?": {"main": [[{"node": "Send Candidate Notification", "type": "main", "index": 0}]]},
-    "Send Candidate Notification": {"main": [[{"node": "Set notification_sent = true", "type": "main", "index": 0}]]}
+    "Review Status Changed to Reviewed": {
+      "main": [
+        [
+          {
+            "node": "Is Reviewed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Reviewed?": {
+      "main": [
+        [
+          {
+            "node": "Send Candidate Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Candidate Notification": {
+      "main": [
+        [
+          {
+            "node": "Set notification_sent = true",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
   "settings": {},

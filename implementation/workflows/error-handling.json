@@ -8,54 +8,157 @@
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -200]
+      "position": [
+        0,
+        -200
+      ],
+      "id": "error-handling-blueprint-traceability"
     },
     {
       "parameters": {
-        "workflowInputs": {"values": [{"name": "record_id"}, {"name": "failure_mode"}]}
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "record_id"
+            },
+            {
+              "name": "failure_mode"
+            }
+          ]
+        }
       },
       "name": "Sub-workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ],
+      "id": "error-handling-sub-workflow-trigger"
     },
     {
       "parameters": {
         "rules": {
           "values": [
-            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "unreadable_pdf"}]}},
-            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "duplicate_application"}]}},
-            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "extraction_failure"}]}},
-            {"conditions": {"conditions": [{"leftValue": "={{$json.failure_mode}}", "rightValue": "llm_parse_failure"}]}}
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.failure_mode}}",
+                    "rightValue": "unreadable_pdf"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.failure_mode}}",
+                    "rightValue": "duplicate_application"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.failure_mode}}",
+                    "rightValue": "extraction_failure"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.failure_mode}}",
+                    "rightValue": "llm_parse_failure"
+                  }
+                ]
+              }
+            }
           ]
         }
       },
       "name": "Route by Failure Mode",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ],
+      "id": "error-handling-route-by-failure-mode"
     },
     {
       "parameters": {
         "operation": "appendOrUpdate",
         "sheetName": "Applicant Records",
-        "matchingColumns": ["record_id"],
-        "columns": {"mappingMode": "defineBelow", "value": {"record_id": "={{$json.record_id}}", "error_detail": "={{$json.failure_mode}}"}}
+        "matchingColumns": [
+          "record_id"
+        ],
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "record_id": "={{$json.record_id}}",
+            "error_detail": "={{$json.failure_mode}}"
+          }
+        }
       },
       "name": "Record error_detail",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ],
+      "id": "error-handling-record-error-detail"
     }
   ],
   "connections": {
-    "Sub-workflow Trigger": {"main": [[{"node": "Route by Failure Mode", "type": "main", "index": 0}]]},
+    "Sub-workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route by Failure Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Route by Failure Mode": {
       "main": [
-        [{"node": "Record error_detail", "type": "main", "index": 0}],
-        [{"node": "Record error_detail", "type": "main", "index": 0}],
-        [{"node": "Record error_detail", "type": "main", "index": 0}],
-        [{"node": "Record error_detail", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Record error_detail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record error_detail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record error_detail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record error_detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },

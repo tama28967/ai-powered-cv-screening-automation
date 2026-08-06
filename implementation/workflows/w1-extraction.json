@@ -8,16 +8,33 @@
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [0, -200]
+      "position": [
+        0,
+        -200
+      ],
+      "id": "w1-extraction-blueprint-traceability"
     },
     {
       "parameters": {
-        "workflowInputs": {"values": [{"name": "resume_drive_ref"}, {"name": "record_id"}]}
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "resume_drive_ref"
+            },
+            {
+              "name": "record_id"
+            }
+          ]
+        }
       },
       "name": "Sub-workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ],
+      "id": "w1-extraction-sub-workflow-trigger"
     },
     {
       "parameters": {
@@ -26,39 +43,86 @@
       "name": "Extract Text Content",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ],
+      "id": "w1-extraction-extract-text-content"
     },
     {
       "parameters": {
         "conditions": {
           "conditions": [
-            {"leftValue": "={{$json.extraction_status}}", "operator": {"operation": "equals"}, "rightValue": "success"}
+            {
+              "leftValue": "={{$json.extraction_status}}",
+              "operator": {
+                "operation": "equals"
+              },
+              "rightValue": "success"
+            }
           ]
         }
       },
       "name": "Extraction Succeeded?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ],
+      "id": "w1-extraction-extraction-succeeded"
     },
     {
       "parameters": {
         "workflowId": "error-handling",
-        "parameters": {"record_id": "={{$json.record_id}}", "failure_mode": "extraction_failure"}
+        "parameters": {
+          "record_id": "={{$json.record_id}}",
+          "failure_mode": "extraction_failure"
+        }
       },
       "name": "Route to Error Handling",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1,
-      "position": [660, 80]
+      "position": [
+        660,
+        80
+      ],
+      "id": "w1-extraction-route-to-error-handling"
     }
   ],
   "connections": {
-    "Sub-workflow Trigger": {"main": [[{"node": "Extract Text Content", "type": "main", "index": 0}]]},
-    "Extract Text Content": {"main": [[{"node": "Extraction Succeeded?", "type": "main", "index": 0}]]},
+    "Sub-workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Text Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text Content": {
+      "main": [
+        [
+          {
+            "node": "Extraction Succeeded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Extraction Succeeded?": {
       "main": [
         [],
-        [{"node": "Route to Error Handling", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Route to Error Handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
