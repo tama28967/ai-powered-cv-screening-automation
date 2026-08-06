@@ -64,7 +64,8 @@
             {
               "leftValue": "={{$json.file.mimeType}}",
               "operator": {
-                "operation": "equals"
+                "operation": "equals",
+                "type": "string"
               },
               "rightValue": "application/pdf"
             }
@@ -78,7 +79,8 @@
         440,
         0
       ],
-      "id": "w1-intake-validation-storage-validate-file-type-size"
+      "id": "w1-intake-validation-storage-validate-file-type-size",
+      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
     },
     {
       "parameters": {
@@ -202,6 +204,7 @@
     "asdp_state": "READY (definition-level)",
     "asdp_d03_remediation": "2026-08-03: added record_id generation at intake (D03-DEF-005)",
     "asdp_d08_def004": "2026-08-06 D08-DEF-004: wired intake -> extraction per Blueprint SS4/SS6.",
-    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token.",
+    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract."
   }
 }

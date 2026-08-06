@@ -56,7 +56,8 @@
             {
               "leftValue": "={{$json.extraction_status}}",
               "operator": {
-                "operation": "equals"
+                "operation": "equals",
+                "type": "string"
               },
               "rightValue": "success"
             }
@@ -70,7 +71,8 @@
         440,
         0
       ],
-      "id": "w1-extraction-extraction-succeeded"
+      "id": "w1-extraction-extraction-succeeded",
+      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
     },
     {
       "parameters": {
@@ -167,6 +169,7 @@
     "asdp_work_item": 4,
     "asdp_state": "READY (definition-level, built to text-PDF assumption)",
     "asdp_d08_def004": "2026-08-06 D08-DEF-004: wired extraction -> AI evaluation per Blueprint SS4/SS6.",
-    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token.",
+    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract."
   }
 }

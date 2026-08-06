@@ -47,20 +47,27 @@
     },
     {
       "parameters": {
-        "operation": "lookup",
+        "operation": "read",
         "sheetName": {
           "__rl": true,
           "mode": "name",
           "value": "Applicant Records"
         },
-        "lookupColumn": "applicant_email",
-        "lookupValue": "={{$json.applicant_email}}",
         "documentId": {
           "__rl": true,
           "mode": "id",
           "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
         },
-        "resource": "sheet"
+        "resource": "sheet",
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "applicant_email",
+              "lookupValue": "={{$json.applicant_email}}"
+            }
+          ]
+        },
+        "options": {}
       },
       "name": "Lookup Existing Records by Email",
       "type": "n8n-nodes-base.googleSheets",
@@ -70,7 +77,7 @@
         0
       ],
       "id": "w1-duplicate-detection-recording-lookup-existing-records-by-emai",
-      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md. D08-DEF-007: googleSheets resource sheet has no \"lookup\" operation; corrected to read + filtersUI."
     },
     {
       "parameters": {
@@ -79,7 +86,8 @@
             {
               "leftValue": "={{$json.matchCount}}",
               "operator": {
-                "operation": "gt"
+                "operation": "gt",
+                "type": "number"
               },
               "rightValue": 0
             }
@@ -93,7 +101,8 @@
         440,
         0
       ],
-      "id": "w1-duplicate-detection-recording-duplicate-found"
+      "id": "w1-duplicate-detection-recording-duplicate-found",
+      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
     },
     {
       "parameters": {
@@ -247,6 +256,8 @@
     "asdp_state": "READY (definition-level)",
     "asdp_d03_remediation": "2026-08-03: fixed incomplete field mapping (D03-DEF-001) and missing Error Handling routing for duplicate_application (D03-DEF-002)",
     "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
-    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token."
+    "asdp_d08_def005": "2026-08-06 D08-DEF-005: executeWorkflow workflowId was a bare name string; runtime requires a resourceLocator. Now a <BIND:...> deployment token.",
+    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract.",
+    "asdp_d08_def007": "2026-08-06 D08-DEF-007: invalid googleSheets operation lookup -> read with filtersUI."
   }
 }

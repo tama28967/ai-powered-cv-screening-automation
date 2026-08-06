@@ -45,7 +45,11 @@
                 "conditions": [
                   {
                     "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "unreadable_pdf"
+                    "rightValue": "unreadable_pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
                 ]
               }
@@ -55,7 +59,11 @@
                 "conditions": [
                   {
                     "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "duplicate_application"
+                    "rightValue": "duplicate_application",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
                 ]
               }
@@ -65,7 +73,11 @@
                 "conditions": [
                   {
                     "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "extraction_failure"
+                    "rightValue": "extraction_failure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
                 ]
               }
@@ -75,7 +87,11 @@
                 "conditions": [
                   {
                     "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "llm_parse_failure"
+                    "rightValue": "llm_parse_failure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
                 ]
               }
@@ -90,7 +106,8 @@
         220,
         0
       ],
-      "id": "error-handling-route-by-failure-mode"
+      "id": "error-handling-route-by-failure-mode",
+      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
     },
     {
       "parameters": {
@@ -180,6 +197,7 @@
     "asdp_work_item": 8,
     "asdp_state": "READY (definition-level)",
     "asdp_d03_remediation": "2026-08-03: changed 'update' to 'appendOrUpdate' keyed on record_id (D03-DEF-004) - early-pipeline failures occur before Duplicate Detection & Recording writes the row",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
+    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract."
   }
 }

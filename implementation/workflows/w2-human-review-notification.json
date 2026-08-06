@@ -25,8 +25,9 @@
         },
         "sheetName": {
           "__rl": true,
-          "mode": "name",
-          "value": "Applicant Records"
+          "mode": "list",
+          "value": "Applicant Records",
+          "cachedResultName": "Applicant Records"
         },
         "triggerOn": "rowUpdate",
         "columnToWatch": "review_status",
@@ -44,7 +45,7 @@
         0
       ],
       "id": "w2-human-review-notification-review-status-changed-to-reviewed",
-      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
+      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md. D08-DEF-008: googleSheetsTrigger requires sheetName.mode in [list,url,id]; \"name\" is valid only on the non-trigger node."
     },
     {
       "parameters": {
@@ -53,7 +54,8 @@
             {
               "leftValue": "={{$json.review_status}}",
               "operator": {
-                "operation": "equals"
+                "operation": "equals",
+                "type": "string"
               },
               "rightValue": "reviewed"
             }
@@ -67,7 +69,8 @@
         220,
         0
       ],
-      "id": "w2-human-review-notification-is-reviewed"
+      "id": "w2-human-review-notification-is-reviewed",
+      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
     },
     {
       "parameters": {
@@ -157,6 +160,8 @@
     "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
     "asdp_work_item": 7,
     "asdp_state": "READY (definition-level)",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value."
+    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
+    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract.",
+    "asdp_d08_def008": "2026-08-06 D08-DEF-008: googleSheetsTrigger sheetName.mode name -> list."
   }
 }
