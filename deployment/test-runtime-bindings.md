@@ -98,3 +98,18 @@ Round 4 recorded the 404 as an unexplained runtime-capability limit. Round 5 dia
 - **Recommendation: upgrade to 2.33.5 (SUPPORTED HYPOTHESIS, not proven), pending Founder authorization.** 2.32.7 is NOT RECOMMENDED (no relevant code motion in its lineage). Do not upgrade to `:latest`/newest-available generically — pin the explicit tag.
 - Formalized as Evidence Record: **EV-043**.
 - **No upgrade, no Docker mutation, no Cloudflare change, and no Webhook-Trigger substitution performed this round**, per instruction.
+
+## n8n upgrade EXECUTED (D08 round 7) — hypothesis falsified
+
+**Founder authorized:** "APPROVE TEST n8n upgrade to 2.33.5" (scoped: TEST instance only, backup-gated, no Production/Cloudflare/DNS/other-workflow mutation, no Webhook substitution).
+
+- **Pre-upgrade backup, verified:** `n8n-app` stopped for consistency; full `n8n-docker_n8n_data` volume tarred to a local, git-ignored path (`01. LESSON/06. DOCKER BACKUP/n8n-backups/n8n_data_pre-2.33.5_upgrade_20260807-143111.tgz`, 568KB); `gzip -t` and `tar tzf` confirmed integrity and the complete expected structure (`database.sqlite`, WAL/SHM, `config`, `nodes/`, `storage/`). Retained locally, not committed, not deleted.
+- **Upgrade executed:** compose `n8n` image pinned from untagged `docker.n8n.io/n8nio/n8n` to explicit `docker.n8n.io/n8nio/n8n:2.33.5` — the only change made. Recreated only the `n8n` service.
+- **Migration/startup: clean.** 14 SQLite migrations completed, no failure; n8n's own log recorded `Recorded version change: 2.31.7 -> 2.33.5`; all previously-active workflows auto-reactivated; `/healthz` 200.
+- **Post-upgrade baseline: intact.** All six PRJ-0001 workflow IDs preserved; MAIN re-validates `errorCount: 0`; unrelated `"My workflow"` untouched.
+- **Control probe (Webhook):** fresh minimal workflow → **200** on both localhost and public, immediately — trigger registration confirmed healthy on 2.33.5 generally.
+- **Experiment (Form Trigger, typeVersion 2.2):** fresh minimal workflow, identical method → **404** on both hosts, identical to the pre-upgrade result.
+- **Verdict: UPGRADE HYPOTHESIS FALSIFIED FOR 2.33.5.** The upgrade succeeded on every other dimension; it did not fix Form Trigger registration. Rollback was NOT triggered (per rule: a still-404 Form Trigger is a falsified hypothesis, not an upgrade failure) — the instance remains on 2.33.5, which is a net-neutral-to-positive change (newer, verified-stable, no regression found) even though it did not resolve the blocker.
+- Both diagnostic probes deleted after evidence capture.
+- **TC-01 remains BLOCKED — genuine stop condition reached** (Form Trigger unavailable on a healthy, current, just-verified instance; per instruction, do not try another version, do not substitute Webhook Trigger, do not ask Founder to click in the UI this round).
+- Formalized as Evidence Record: **EV-044**.
