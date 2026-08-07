@@ -142,3 +142,7 @@ Resumed via the short-prompt pattern (`/asdp-state` + one-line Objective), recon
 **W2 is now active** (previously inactive pending this proof) — a proven working component of the pipeline, matching the other five workflows.
 
 Formalized as Evidence Record: **EV-047**.
+
+**Follow-up, same continuation — self-trigger duplicate-send defect found and fixed.** A second execution fired for the *same* TC-01 record nine seconds after the first: W2 writes `notification_sent` to the row its own Sheets Trigger polls, and `Is Reviewed?` never checked whether a notification had already been sent — a genuine duplicate Gmail send occurred (both to the TEST account, never a real candidate). Contained by deactivating W2 immediately (before a third poll could fire), fixed with an added `notification_sent != "true"` condition, and verified against the exact failure mode: a fresh record (TC-03) sent exactly once, and the inevitable self-triggered re-poll on TC-03's own write-back correctly no-opped (routed false, no send) rather than duplicating.
+
+Formalized as Evidence Record: **EV-048**.
