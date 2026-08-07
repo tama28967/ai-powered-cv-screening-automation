@@ -37,7 +37,8 @@ The source therefore carries **`<BIND:token>`** placeholders inside the correct 
 
 | Resource | Identity |
 |---|---|
-| Project Drive boundary | `ASDP/PRJ-0001/` — `1G2RiX-oCJqpFPs7lyjCLNgZM5F1EjrgD` |
+| ASDP root folder (parent) | `1A1TnE1_dHp7etzPYDLOwNdakyUBHllo6` — created 2026-08-06 by ASDP's own Test Environment designation. **A second, unrelated folder also named `ASDP` exists in this Drive** (`1Ra002pg7owfsz6U7ReXB_ZdEDPepYY-a`, predates this project, created 2026-07-17) — always bind by this ID, never re-discover by searching the name `ASDP` (confirmed by direct Drive API lookup, D08 round 8 Founder Q&A). Canonical reference (separate repository): ASDP's `frameworks/delivery-framework/.claude/knowledge/default-test-environment-profile.md`. |
+| Project Drive boundary | `ASDP/PRJ-0001/` — `1G2RiX-oCJqpFPs7lyjCLNgZM5F1EjrgD` (child of the ASDP root folder above) |
 | Applicant records Sheet | `PRJ-0001 Test - Applicant Records` — `1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8` |
 
 ## Model binding
