@@ -130,3 +130,15 @@ Round 4 recorded the 404 as an unexplained runtime-capability limit. Round 5 dia
 **W2/Gmail:** NOT RUN — independent, deliberately-inactive Sheets-poll trigger; activating it opens a new autonomous-Gmail-send surface, a separate decision from this round's scope.
 
 Formalized as Evidence Records: **EV-045** (root cause + Webhook fallback decision), **EV-046** (TC-01/02/03 + error path + defect remediation).
+
+## D08 CONTINUATION — W2 / Gmail TEST verification PASS
+
+Resumed via the short-prompt pattern (`/asdp-state` + one-line Objective), reconstructed autonomously with no prescriptive brief.
+
+**Defect found and fixed:** `googleSheetsTrigger`'s `sheetName.mode: "list"` held a plain sheet name instead of a numeric gid — activation failed (`"Sheet with ID Applicant Records not found"`). A recurrence of D08 round 4's DEF-008 class (the Sheets **Trigger** node variant rejects `mode: "name"`, unlike the regular Sheets node) — round 4's fix never reached this node because W2 was never activated until now. Fixed with the tab's actual `sheetId` (gid `1629274334`, looked up via a disposable HTTP probe against the Sheets API) and `mode: "id"`.
+
+**Execution proof (record `REC-1786090017075-287`):** `review_status` set to `"reviewed"` → W2's Sheets Trigger picked it up on its next poll → full 4-node graph PASS → **Gmail's own API response confirms `SENT`** (`id: 19fdd126d23066bf`, `labelIds: ["UNREAD","SENT","INBOX"]`) → Sheets `notification_sent` confirmed written `true`. TEST recipient (`tama28967@gmail.com`) is the same Dedicated ASDP Test Account used throughout D08, never a real candidate address.
+
+**W2 is now active** (previously inactive pending this proof) — a proven working component of the pipeline, matching the other five workflows.
+
+Formalized as Evidence Record: **EV-047**.
