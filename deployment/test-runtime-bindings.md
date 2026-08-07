@@ -113,3 +113,19 @@ Round 4 recorded the 404 as an unexplained runtime-capability limit. Round 5 dia
 - Both diagnostic probes deleted after evidence capture.
 - **TC-01 remains BLOCKED — genuine stop condition reached** (Form Trigger unavailable on a healthy, current, just-verified instance; per instruction, do not try another version, do not substitute Webhook Trigger, do not ask Founder to click in the UI this round).
 - Formalized as Evidence Record: **EV-044**.
+
+## D08 ROUND 8 (FINAL) — root cause confirmed, Webhook fallback adopted, first real E2E PASS
+
+**Root cause confirmed (Verdict B — CONFIRMED, NOT PRACTICALLY REMEDIABLE):** installed `n8n-nodes-base` source shows `FormTriggerV2` registers its production route via two webhook descriptors both tagged `nodeType: 'form'` — a distinct code path from ordinary Webhook nodes. A live `docker logs` capture during a controlled activation caught n8n's own dispatcher saying `"Received request for unknown webhook: ... is not registered"` for the Form Trigger's GET route — direct evidence the `nodeType: 'form'` route is never persisted into the live registry on this deployment, while a plain Webhook registers immediately every time. Fixing this means patching n8n's own installed package — out of the TEST mutation boundary and not durable across image updates.
+
+**Webhook Trigger adopted as the TEST intake mechanism**, verified Blueprint-conformant first: `engineering-blueprint.md` explicitly frames the intake mechanism as *"native n8n form vs. external service — a build-time choice"*, not a client-mandated technology — so this is an **engineering implementation adaptation**, not a business-scope change. MAIN's `Form Trigger` node replaced with `n8n-nodes-base.webhook` (`POST /webhook/prj0001-intake`, multipart, `binaryPropertyName: resume_pdf`). Deviation disclosed here, not hidden.
+
+**First real end-to-end execution.** Four ordinary defects were found and fixed by actual execution (invisible to static validation because nothing had ever reached these code paths): (1) Drive-upload binary field name (`resume_pdf0` vs stale `data`); (2) `executeWorkflow` `workflowId` resourceLocator object unreadable at `typeVersion 1` — bumped to `1.1` on all 6 call sites; (3) duplicate-detection zero-item starvation when no existing row matches — fixed with `alwaysOutputData` + an explicit `duplicate_found` boolean; (4) all 4 "→ Error Handling" call sites silently passed the full upstream item instead of the mapped `{record_id, failure_mode}` object, and Error Handling's own `Switch` node was missing `operator` on all 4 rules (same shape class as round 4 DEF-006, unexercised until now) — fixed with an explicit `Build Error Input` node per call site + `autoMapInputData` + the missing operators + a declared trigger input schema.
+
+**TC-01 PASS, TC-02 PASS, TC-03 PASS, controlled error path PASS** — full execution graphs inspected (not top-level status only); external state independently read back: a real Google Drive file (Google's own API response, not our claim), a real Gemini 2.5 Flash structured response, real Google Sheets rows (TC-02's Lookup independently re-confirmed TC-01's write), and a real Sheets `error_detail` write via the shared Error Handling path.
+
+**Boundary preserved:** runtime correctness proven; semantic/business correctness NOT claimed — TEST-only evaluation criteria remain OPEN, and the low scores are an expected artifact of the already-documented Latin-1-decode "extraction" limitation (OCR/real-text-extraction OTQ2, unchanged).
+
+**W2/Gmail:** NOT RUN — independent, deliberately-inactive Sheets-poll trigger; activating it opens a new autonomous-Gmail-send surface, a separate decision from this round's scope.
+
+Formalized as Evidence Records: **EV-045** (root cause + Webhook fallback decision), **EV-046** (TC-01/02/03 + error path + defect remediation).
