@@ -1,203 +1,86 @@
 {
-  "name": "PRJ-0001 - Error Handling (shared)",
+  "_asdp_note": "ROLLBACK RECORD ONLY — this workflow was deleted from the live n8n instance on 2026-08-14 per Founder direction: no error is recorded to Applicant Records anymore (error_detail column deleted from the sheet). With its only job (writing error_detail) removed, Error Handling had nothing left to do, so it was removed too, not left as a no-op sub-workflow call — matching ADR-0021/0024's monolithic/lean-by-default bias. All 5 W1 call sites now go straight from their failure-detecting IF/Set node to the corresponding Respond to Webhook node. This file is the exact last-deployed definition, kept for traceability/rollback only.",
+  "id": "yrIl76JCaaQloshO",
+  "name": "PRJ-0001 — Error Handling (shared)",
+  "active": true,
   "nodes": [
     {
       "parameters": {
-        "notice": "Shared sub-workflow, wired to every W1 stage. Covers exactly the named failure modes from Blueprint SS7: unreadable PDF, duplicate application, extraction failure, plus LLM call/parse failure.\n\nD03 REMEDIATION (2026-08-03, D03-DEF-004): early-pipeline failures (unreadable_pdf, extraction_failure, llm_parse_failure) occur BEFORE Duplicate Detection & Recording ever writes the Sheets row - a plain 'update' would find nothing to update. Changed to 'appendOrUpdate' keyed on record_id, which creates the row for an early failure and updates it for a late one (duplicate_application, which fires after the row exists)."
+        "content": "Shared sub-workflow, called from every applicant-pipeline stage. Covers exactly the failure modes from Blueprint SS7: unreadable PDF, duplicate application, extraction failure, plus LLM call/parse failure."
       },
+      "id": "eh-note",
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        0,
-        -200
-      ],
-      "id": "error-handling-blueprint-traceability"
-    },
-    {
-      "parameters": {
-        "workflowInputs": {
-          "values": [
-            {
-              "name": "record_id"
-            },
-            {
-              "name": "failure_mode"
-            }
-          ]
-        }
-      },
-      "name": "Sub-workflow Trigger",
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "error-handling-sub-workflow-trigger"
+      "position": [0, -208]
     },
     {
       "parameters": {
         "rules": {
           "values": [
-            {
-              "conditions": {
-                "conditions": [
-                  {
-                    "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "unreadable_pdf",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "conditions": [
-                  {
-                    "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "duplicate_application",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "conditions": [
-                  {
-                    "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "extraction_failure",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "conditions": {
-                "conditions": [
-                  {
-                    "leftValue": "={{$json.failure_mode}}",
-                    "rightValue": "llm_parse_failure",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              }
-            }
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "unreadable_pdf", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } },
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "duplicate_application", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } },
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "extraction_failure", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } },
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "llm_parse_failure", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } },
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "invalid_job_selection", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } },
+            { "conditions": { "conditions": [{ "leftValue": "={{$json.failure_mode}}", "rightValue": "file_too_large", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and", "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 } } }
           ]
-        }
+        },
+        "options": {}
       },
+      "id": "eh-switch",
       "name": "Route by Failure Mode",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [
-        220,
-        0
-      ],
-      "id": "error-handling-route-by-failure-mode",
-      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
+      "position": [224, 0]
     },
     {
       "parameters": {
         "operation": "appendOrUpdate",
-        "sheetName": {
-          "__rl": true,
-          "mode": "name",
-          "value": "Applicant Records"
-        },
+        "documentId": { "__rl": true, "mode": "id", "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8" },
+        "sheetName": { "__rl": true, "mode": "name", "value": "Applicant Records" },
         "columns": {
           "mappingMode": "defineBelow",
-          "value": {
-            "record_id": "={{$json.record_id}}",
-            "error_detail": "={{$json.failure_mode}}"
-          },
-          "matchingColumns": [
-            "record_id"
-          ]
+          "value": { "record_id": "={{$json.record_id}}", "error_detail": "={{$json.failure_mode}}" },
+          "matchingColumns": ["record_id"]
         },
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
-        },
-        "resource": "sheet"
+        "options": {}
       },
+      "id": "eh-sheets",
       "name": "Record error_detail",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [
-        440,
-        0
-      ],
-      "id": "error-handling-record-error-detail",
-      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
+      "position": [448, 0],
+      "credentials": { "googleSheetsOAuth2Api": { "id": "dK1PrRScgmvDvDsa", "name": "Google Sheets account" } }
+    },
+    {
+      "parameters": {},
+      "id": "eh-trigger",
+      "name": "Sub-workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
     }
   ],
   "connections": {
-    "Sub-workflow Trigger": {
-      "main": [
-        [
-          {
-            "node": "Route by Failure Mode",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Route by Failure Mode": {
       "main": [
-        [
-          {
-            "node": "Record error_detail",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Record error_detail",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Record error_detail",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Record error_detail",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }],
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }],
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }],
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }],
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }],
+        [{ "node": "Record error_detail", "type": "main", "index": 0 }]
       ]
-    }
+    },
+    "Sub-workflow Trigger": { "main": [[{ "node": "Route by Failure Mode", "type": "main", "index": 0 }]] }
   },
-  "active": false,
-  "settings": {},
-  "meta": {
-    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
-    "asdp_work_item": 8,
-    "asdp_state": "READY (definition-level)",
-    "asdp_d03_remediation": "2026-08-03: changed 'update' to 'appendOrUpdate' keyed on record_id (D03-DEF-004) - early-pipeline failures occur before Duplicate Detection & Recording writes the row",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
-    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract."
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "binaryMode": "separate"
   }
 }

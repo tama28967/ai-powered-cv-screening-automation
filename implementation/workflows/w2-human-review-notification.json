@@ -1,167 +1,142 @@
 {
-  "name": "PRJ-0001 - W2 - Human Review Gate & Notification",
+  "_asdp_note": "ROLLBACK RECORD ONLY — this workflow was deleted from the live n8n instance on 2026-08-13 as part of the human-review-gate removal (Founder decision, chat-confirmed): notification logic was absorbed into the merged W1 pipeline (PRJ-0001 — W1 Applicant Pipeline, id 4nDrnkEQ9I9j8mjw). This file is the exact last-deployed definition (fetched live via n8n_get_workflow, mode=full, immediately before deletion), kept for traceability/rollback, not for re-deployment as-is (workflowId/webhookId values below are the original instance's, not portable without adjustment).",
+  "id": "jc9ZA8Np8Dpts9Ey",
+  "name": "PRJ-0001 — W2 Human Review Gate and Notification",
+  "active": true,
   "nodes": [
     {
       "parameters": {
-        "notice": "Independently-triggered workflow (Blueprint SS3 architecture decision): decouples 'record written' from 'candidate notified'. Fires only when review_status transitions to 'reviewed' - never directly from W1."
+        "content": "Blueprint SS4: this workflow is triggered INDEPENDENTLY by a reviewer marking review_status in Sheets. It NEVER fires from the applicant pipeline directly — this decouples 'record written' from 'candidate notified'."
       },
+      "id": "w2-note",
       "name": "Blueprint Traceability",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        0,
-        -200
-      ],
-      "id": "w2-human-review-notification-blueprint-traceability"
+      "position": [0, -240]
     },
     {
       "parameters": {
-        "pollTimes": {
-          "item": [
-            {
-              "mode": "everyMinute"
-            }
-          ]
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "list",
-          "value": "Applicant Records",
-          "cachedResultName": "Applicant Records"
-        },
-        "triggerOn": "rowUpdate",
-        "columnToWatch": "review_status",
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
-        }
+        "pollTimes": { "item": [{ "mode": "everyMinute" }] },
+        "documentId": { "__rl": true, "mode": "id", "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8" },
+        "sheetName": { "__rl": true, "mode": "id", "value": "1629274334" },
+        "event": "rowUpdate",
+        "options": {}
       },
+      "id": "w2-trigger",
       "name": "Review Status Changed to Reviewed",
       "type": "n8n-nodes-base.googleSheetsTrigger",
       "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "w2-human-review-notification-review-status-changed-to-reviewed",
-      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md. D08-DEF-008: googleSheetsTrigger requires sheetName.mode in [list,url,id]; \"name\" is valid only on the non-trigger node."
+      "position": [0, 0],
+      "credentials": { "googleSheetsTriggerOAuth2Api": { "id": "8DLNGCR3YKCQl4Yu", "name": "Google Sheets Trigger account" } }
     },
     {
       "parameters": {
         "conditions": {
           "conditions": [
-            {
-              "leftValue": "={{$json.review_status}}",
-              "operator": {
-                "operation": "equals",
-                "type": "string"
-              },
-              "rightValue": "reviewed"
-            }
-          ]
-        }
+            { "leftValue": "={{ $json.review_status }}", "operator": { "type": "string", "operation": "equals" }, "rightValue": "reviewed" },
+            { "leftValue": "={{ $json.notification_sent }}", "operator": { "type": "string", "operation": "notEquals" }, "rightValue": "true" }
+          ],
+          "combinator": "and",
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 }
+        },
+        "options": {}
       },
+      "id": "w2-if",
       "name": "Is Reviewed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        220,
-        0
-      ],
-      "id": "w2-human-review-notification-is-reviewed",
-      "notes": "D08-DEF-006 remediation: n8n filter-type conditions require operator.type (string|number|boolean|dateTime|array|object) alongside operator.operation. Generated artifacts omitted it; the switch node omitted operator entirely. Shape corrected against the runtime contract."
+      "position": [240, 0]
     },
     {
       "parameters": {
-        "sendTo": "={{$json.applicant_email}}",
-        "subject": "Application Update",
-        "message": "Candidate notification content - final copy is a Client Deliverable (D05), not authored here."
+        "conditions": {
+          "conditions": [
+            { "leftValue": "={{ $json.recommendation }}", "operator": { "type": "string", "operation": "equals" }, "rightValue": "shortlist" }
+          ],
+          "combinator": "and",
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 }
+        },
+        "options": {}
       },
+      "id": "w2-passed-if",
+      "name": "Lolos Evaluasi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "tama28967@gmail.com",
+        "subject": "=Undangan Interview — {{ $json.record_id }} — PT ABC",
+        "emailType": "text",
+        "message": "=Hi, {{ $json.applicant_name }}.\nSelamat CV kamu lolos seleksi, silahkan ikuti interview secara Online melalui aplikasi Google Meet pada tanggal {{ $json.interview_date ? $json.interview_date : '[akan dikonfirmasi terpisah oleh HR]' }}.\nTerimakasih\n\nSalam,\nHR. PT ABC",
+        "options": {}
+      },
+      "id": "w2-gmail",
       "name": "Send Candidate Notification",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2,
-      "position": [
-        440,
-        0
-      ],
-      "id": "w2-human-review-notification-send-candidate-notification"
+      "position": [496, -176],
+      "webhookId": "f3a03dd6-ded0-439d-8bba-c2e78abd5bae",
+      "credentials": { "gmailOAuth2": { "id": "fqN3O2IpirUQDjEL", "name": "Gmail account" } }
     },
     {
       "parameters": {
-        "operation": "update",
-        "sheetName": {
-          "__rl": true,
-          "mode": "name",
-          "value": "Applicant Records"
-        },
+        "sendTo": "tama28967@gmail.com",
+        "subject": "=Hasil Seleksi Lamaran — {{ $json.record_id }} — PT ABC",
+        "emailType": "text",
+        "message": "=Hi, {{ $json.applicant_name }}.\nMohon maaf, CV kamu belum berhasil lolos seleksi untuk saat ini. {{ $json.evaluation_reason ? $json.evaluation_reason : 'Tim kami belum dapat menyampaikan detail evaluasi lebih lanjut.' }}\nKami menghargai waktu dan minat kamu untuk melamar.\nTerimakasih\n\nSalam,\nHR. PT ABC\n\n[DRAFT — menunggu koreksi Founder]",
+        "options": {}
+      },
+      "id": "w2-gmail-reject",
+      "name": "Send Rejection Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [736, 16],
+      "webhookId": "8ddbf513-cf70-492f-a96a-bab3f26e971f",
+      "credentials": { "gmailOAuth2": { "id": "fqN3O2IpirUQDjEL", "name": "Gmail account" } }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": { "__rl": true, "mode": "id", "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8" },
+        "sheetName": { "__rl": true, "mode": "name", "value": "Applicant Records" },
         "columns": {
           "mappingMode": "defineBelow",
+          "matchingColumns": ["record_id"],
           "value": {
-            "notification_sent": true
+            "record_id": "={{ $('Review Status Changed to Reviewed').item.json.record_id }}",
+            "notification_sent": "true"
           }
         },
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1eiVPbSbJrZSiNa3FaKXgwQCJtxuew5zDeW7Qujgdd_8"
-        },
-        "resource": "sheet"
+        "options": {}
       },
+      "id": "w2-mark",
       "name": "Set notification_sent = true",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [
-        660,
-        0
-      ],
-      "id": "w2-human-review-notification-set-notification-sent-true",
-      "notes": "TEST BINDING (D08): documentId points at the Founder-Designated TEST spreadsheet 'PRJ-0001 Test - Applicant Records'. This is an environment binding, NOT a client/Production value - rebind before any Production deployment. See deployment/test-environment-designation.md."
+      "position": [736, -176],
+      "credentials": { "googleSheetsOAuth2Api": { "id": "dK1PrRScgmvDvDsa", "name": "Google Sheets account" } }
     }
   ],
   "connections": {
-    "Review Status Changed to Reviewed": {
+    "Review Status Changed to Reviewed": { "main": [[{ "node": "Is Reviewed?", "type": "main", "index": 0 }]] },
+    "Is Reviewed?": { "main": [[{ "node": "Lolos Evaluasi?", "type": "main", "index": 0 }]] },
+    "Lolos Evaluasi?": {
       "main": [
-        [
-          {
-            "node": "Is Reviewed?",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Send Candidate Notification", "type": "main", "index": 0 }],
+        [{ "node": "Send Rejection Notification", "type": "main", "index": 0 }]
       ]
     },
-    "Is Reviewed?": {
-      "main": [
-        [
-          {
-            "node": "Send Candidate Notification",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Candidate Notification": {
-      "main": [
-        [
-          {
-            "node": "Set notification_sent = true",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
+    "Send Candidate Notification": { "main": [[{ "node": "Set notification_sent = true", "type": "main", "index": 0 }]] },
+    "Send Rejection Notification": { "main": [[{ "node": "Set notification_sent = true", "type": "main", "index": 0 }]] }
   },
-  "active": false,
-  "settings": {},
-  "meta": {
-    "asdp_blueprint_source": "Workspace/projects/PRJ-0001/engineering-blueprint.md#4-system-decomposition",
-    "asdp_work_item": 7,
-    "asdp_state": "READY (definition-level)",
-    "asdp_d08_remediation": "2026-08-06 D08-DEF-002/003: googleSheets parameter shape corrected - documentId and sheetName are resourceLocator objects (were string/missing), matchingColumns nested inside columns. Shape proven at runtime by read-back against the TEST spreadsheet. documentId is a TEST binding, not a Production value.",
-    "asdp_d08_def006": "2026-08-06 D08-DEF-006: condition operator.type added (and operator added where absent) to match the n8n runtime contract.",
-    "asdp_d08_def008": "2026-08-06 D08-DEF-008: googleSheetsTrigger sheetName.mode name -> list."
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "binaryMode": "separate"
   }
 }
