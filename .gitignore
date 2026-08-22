@@ -15,6 +15,12 @@
 test-fixtures/
 local-test-data/
 
+# Local-only working assets, never part of the committed deliverable set
+# (project-repository-strategy.md's "what is committed" list: project.yaml,
+# Briefcase, Engineering Blueprint, implementation/, evidence/ — nothing
+# else). Marketing/cover-image drafts and iterations live here locally only.
+cover-image/
+
 # Document formats commonly carrying personal data, anywhere in the repository
 *.pdf
 *.doc
