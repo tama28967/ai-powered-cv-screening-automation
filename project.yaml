@@ -1,3 +1,12 @@
 project_id: PRJ-0001
 portfolio_title: "AI Powered CV Screening & Recruitment Workflow Automation"
 source_opportunity: OP-0002
+
+# Classification added 2026-08-22 per ADR-0033 (Personal & Client Project Classification).
+# Current metadata only — does not rewrite or reinterpret this Project's existing artifacts
+# (briefcase.md, engineering-blueprint.md, delivery/, evidence/, lessons/), which remain the
+# honest historical record of a deliberate practice exercise that ran the full Consulting
+# Framework pipeline (Opportunity -> Assessment -> Proposal -> Founder self-ratified
+# "acceptance") to simulate a real client engagement end-to-end.
+project_type: personal
+client: Founder
